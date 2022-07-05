@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>GeoWiki.Cli</PackageId>
-    <Version>0.0.1</Version>
+    <Version>0.0.2-alpha2</Version>
     <Authors>Anto Subash</Authors>
     <Company>IIASA</Company>
     <OutputType>Exe</OutputType>
