@@ -14,7 +14,7 @@ class AddShapeFileCommand : AsyncCommand<AddSettings>
 
     public override async Task<int> ExecuteAsync(CommandContext context, AddSettings settings)
     {
-        await _shapeFileService.AddShapeFileAsync(settings.FilePath);
+        await _shapeFileService.AddShapeFileAsync(settings.FilePath, settings.TableName);
         return 0;
     }
 }

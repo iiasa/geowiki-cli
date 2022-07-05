@@ -7,30 +7,109 @@ namespace GeoWiki.Cli.Services
 {
     public class ShapeFileService
     {
-        public async Task AddShapeFileAsync(string filePath)
+        public async Task AddShapeFileAsync(string filePath, string? tableName)
         {
-            // Add the shape file to the database.
+            var host = Environment.GetEnvironmentVariable("POSTGRES_HOST");
+            var port = Environment.GetEnvironmentVariable("POSTGRES_PORT");
+            var user = Environment.GetEnvironmentVariable("POSTGRES_USER");
+            var password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
+            var database = Environment.GetEnvironmentVariable("POSTGRES_DATABASE");
+            
+            // check if all required environment variables are set
+            checkEnvironment(host, port, user, password, database);
+
+            // create connection string
+            var connectionString = $"Host={host};Port={port};Username={user};Password={password};Database={database}";
+
+            // check file exist.
             Console.WriteLine($"Reading shape file {filePath}.");
             if (!File.Exists(filePath))
                 throw new Exception("File not found");
 
-            // Read the shape file.
-            // var sfr = new ShapefileReader(filePath, geometryFactory: GeometryFactory.Default);
-            // var gc = sfr.ReadAll();
-            // for (int i = 0; i < gc.NumGeometries; i++)
-            //     Console.WriteLine(i + " " + gc.Geometries[i].SRID);
-            // using (var reader = new ShapefileDataReader(filePath, GeometryFactory.Default))
-            // {
-            //     int length = reader.DbaseHeader.NumFields;
-            //     while (reader.Read())
-            //     {
-            //         for (int i = 1; i < length; i++)
-            //         {
-            //             Console.WriteLine(reader.get(i));
-            //         }
-            //     }
-            // }
+            // read shape file.
+            FeatureCollection features = readShapeFile(filePath);
 
+            Console.WriteLine($"Found {features.Count()} features.");
+
+            Console.WriteLine("Found following features:");
+            var firstAttribute = features.First().Attributes.GetNames().First();
+            foreach (var feature in features.First().Attributes.GetNames())
+            {
+                Console.WriteLine(feature);
+            }
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync();
+            bool dbExists = checkDbExists(conn, database);
+
+            if (tableName is null)
+            {
+                tableName = Path.GetFileNameWithoutExtension(filePath);
+            }
+
+            // Check if the table exists.
+            Console.WriteLine($"Checking if table {tableName} exists.");
+            var tableExists = checkTableExists(conn, tableName);
+            Console.WriteLine($"Table exists: {tableExists}");
+
+
+            // Create the table if it doesn't exist.
+            if (!tableExists)
+            {
+                Console.WriteLine($"Creating table {tableName}.");
+                createTable(conn, tableName);
+            }
+
+            // Add columns if they don't exist.
+            foreach (var feature in features.First().Attributes.GetNames())
+            {
+                Console.WriteLine($"Checking if column {feature} exists.");
+                var columnExists = checkColumnExists(conn, tableName, feature.ToLowerInvariant());
+                if (!columnExists)
+                {
+                    Console.WriteLine($"Adding column {feature}.");
+                    addColumn(conn, tableName, feature);
+                }
+            }
+
+            // Insert the features.
+            foreach (var feature in features)
+            {
+                Console.WriteLine($"Inserting feature {feature.Attributes[firstAttribute]}.");
+                insertFeature(conn, tableName, feature);
+            }
+        }
+
+        private static void checkEnvironment(string? host, string? port, string? user, string? password, string? database)
+        {
+            if (host == null)
+            {
+                throw new InvalidOperationException("POSTGRES_HOST environment variable is not set.");
+            }
+
+            if (port == null)
+            {
+                throw new InvalidOperationException("POSTGRES_PORT environment variable is not set.");
+            }
+
+            if (user == null)
+            {
+                throw new InvalidOperationException("POSTGRES_USER environment variable is not set.");
+            }
+
+            if (password == null)
+            {
+                throw new InvalidOperationException("POSTGRES_PASSWORD environment variable is not set.");
+            }
+
+            if (database == null)
+            {
+                throw new InvalidOperationException("POSTGRES_DATABASE environment variable is not set.");
+            }
+        }
+
+        private FeatureCollection readShapeFile(string filePath)
+        {
             FeatureCollection features = new FeatureCollection();
             var geometryFactory = new GeometryFactory();
             using (var shapeFileDataReader = new ShapefileDataReader(filePath, geometryFactory))
@@ -54,84 +133,77 @@ namespace GeoWiki.Cli.Services
                     }
 
                     feature.Geometry = geometry;
+                    feature.Geometry.SRID = 4326;
                     var envelope = geometry.Envelope;
                     feature.BoundingBox = new Envelope(envelope.Coordinates[0], envelope.Coordinates[2]);
                     feature.Attributes = attributesTable;
                     features.Add(feature);
                 }
             }
-            Console.WriteLine($"Added {features.Count()} features.");
+            return features;
+        }
 
-            foreach (var feature in features.First().Attributes.GetNames())
+        private void insertFeature(NpgsqlConnection conn, string tableName, IFeature feature)
+        {
+            var sql = $"INSERT INTO {tableName} (geom, {string.Join(", ", feature.Attributes.GetNames())}) VALUES (ST_GeomFromText('{feature.Geometry.AsText()}', 4326), @{string.Join(", @", feature.Attributes.GetNames())})";
+            using var cmd = new NpgsqlCommand(sql, conn);
+            foreach (var attribute in feature.Attributes.GetNames())
             {
-                Console.WriteLine(feature);
+                cmd.Parameters.AddWithValue(attribute, feature.Attributes[attribute] ?? DBNull.Value);
             }
+            // Console.WriteLine($"Executing SQL: {cmd.CommandText}");
+            cmd.ExecuteNonQuery();
+        }
 
-            var connString = "Host=localhost;Username=postgres;Password=postgres;Database=gis_data";
+        private void addColumn(NpgsqlConnection conn, string tableName, string feature)
+        {
+            var cmdText = $"ALTER TABLE {tableName} ADD COLUMN {feature} text";
+            ExecuteNonQuery(conn, cmdText);
+        }
 
-            await using var conn = new NpgsqlConnection(connString);
-            await conn.OpenAsync();
-            bool dbExists;
+        private bool checkColumnExists(NpgsqlConnection conn, string tableName, string feature)
+        {
+            string cmdText = $"SELECT column_name FROM information_schema.columns WHERE table_name = '{tableName}' AND column_name = '{feature}'";
+            return ExecuteScalar(conn, cmdText);
+        }
 
-            string cmdText = "SELECT 1 FROM pg_database WHERE datname='gis_data'";
+        private void createTable(NpgsqlConnection conn, string tableName)
+        {
+            string cmdText = $"CREATE TABLE {tableName} (id serial PRIMARY KEY, geom geometry(Geometry, 4326))";
+            ExecuteNonQuery(conn, cmdText);
+        }
+
+        private static void ExecuteNonQuery(NpgsqlConnection conn, string cmdText)
+        {
+            Console.WriteLine($"Executing: {cmdText}");
             using (NpgsqlCommand cmd = new NpgsqlCommand(cmdText, conn))
             {
-                dbExists = cmd.ExecuteScalar() != null;
+                cmd.ExecuteNonQuery();
             }
+        }
 
-            Console.WriteLine($"Database exists: {dbExists}");
-
-            // if (!dbExists)
-            // {
-            //     cmdText = "CREATE DATABASE gis_data";
-            //     using (NpgsqlCommand cmd = new NpgsqlCommand(cmdText, conn))
-            //     {
-            //         await cmd.ExecuteNonQueryAsync();
-            //     }
-            // }
-
-            // Check if the table exists.
-            var tableExists = false;
-            string tableName = "iba_shape_file";
-            cmdText = $"select case when exists((select * from information_schema.tables where table_name = '" + tableName + "')) then 1 else 0 end";
+        private bool checkTableExists(NpgsqlConnection conn, string tableName)
+        {
+            var cmdText = $"select case when exists((select * from information_schema.tables where table_name = '" + tableName + "')) then 1 else 0 end";
+            Console.WriteLine($"Executing: {cmdText}");
             using (NpgsqlCommand cmd = new NpgsqlCommand(cmdText, conn))
             {
-                tableExists = (int)cmd.ExecuteScalar() == 1;
+                return (int)cmd.ExecuteScalar() == 1;
             }
+        }
 
-            Console.WriteLine($"Table exists: {tableExists}");
+        private bool checkDbExists(NpgsqlConnection conn, string database)
+        {
+            string cmdText = $"SELECT 1 FROM pg_database WHERE datname='{database}'";
+            return ExecuteScalar(conn, cmdText);
+        }
 
-
-            // Create the table if it doesn't exist.
-            if (!tableExists)
+        private static bool ExecuteScalar(NpgsqlConnection conn, string cmdText)
+        {
+            Console.WriteLine($"Executing: {cmdText}");
+            using (NpgsqlCommand cmd = new NpgsqlCommand(cmdText, conn))
             {
-                cmdText = $"CREATE TABLE {tableName} (id serial PRIMARY KEY, geom geometry(Geometry, 4326))";
-                using (NpgsqlCommand cmd = new NpgsqlCommand(cmdText, conn))
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-            }
-
-            // // Add columns if they don't exist.
-
-            // foreach (var feature in features.First().Attributes.GetNames())
-            // {
-            //     Console.WriteLine(feature);
-            //     cmdText = $"ALTER TABLE {tableName} ADD COLUMN {feature} text";
-            //     using (NpgsqlCommand cmd = new NpgsqlCommand(cmdText, conn))
-            //     {
-            //         await cmd.ExecuteNonQueryAsync();
-            //     }
-            // }
-
-            // Insert the features.
-            foreach (var feature in features)
-            {
-                cmdText = $"INSERT INTO {tableName} (geom) VALUES (ST_GeomFromText('{feature.Geometry.AsText()}', 4326)) ";
-                using (NpgsqlCommand cmd = new NpgsqlCommand(cmdText, conn))
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
+                return cmd.ExecuteScalar() != null;
             }
         }
     }

@@ -6,5 +6,9 @@ public class AddSettings : CommandSettings
 {
     [CommandOption("-p|--path <PATH>")]
     [Description("Path of the file.")]
-    public string FilePath { get; set; }
+    public string FilePath { get; set; } = "";
+
+    [CommandOption("-t|--table <TABLE>")]
+    [Description("Name of the table.")]
+    public string? TableName { get; set; }
 }
