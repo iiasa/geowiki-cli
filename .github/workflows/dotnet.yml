@@ -22,5 +22,5 @@ jobs:
     - name: pack
       run: dotnet pack GeoWiki.Cli/GeoWiki.Cli.csproj -c release
     - name: push
-      run: dotnet nuget push GeoWiki.Cli/nupkg/*.nupkg --skip-duplicate -s https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_TOKEN }}  
+      run: dotnet nuget push GeoWiki.Cli/nupkg/*.nupkg --skip-duplicate -s https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_TOKEN }}
     
