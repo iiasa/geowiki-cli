@@ -23,6 +23,7 @@ public static class Program
         var app = new CommandApp(registrar);
         app.Configure(config =>
         {
+            config.SetApplicationName("geowiki");
             config.AddCommand<DefaultCommand>("hello");
             config.AddCommand<AddShapeFileCommand>("add-shape-file");
         });
