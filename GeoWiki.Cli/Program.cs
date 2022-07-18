@@ -16,6 +16,7 @@ public static class Program
         var registrations = new ServiceCollection();
         registrations.AddSingleton<IGreeter, HelloWorldGreeter>();
         registrations.AddScoped<ShapeFileService>();
+        registrations.AddScoped<DatabaseService>();
         var registrar = new TypeRegistrar(registrations);
 
         // Create a new command app with the registrar

@@ -7,6 +7,13 @@ namespace GeoWiki.Cli.Services
 {
     public class ShapeFileService
     {
+        private readonly DatabaseService databaseService;
+
+        public ShapeFileService(DatabaseService databaseService)
+        {
+            this.databaseService = databaseService;
+        }
+
         public async Task AddShapeFileAsync(string filePath, string? tableName)
         {
             var host = Environment.GetEnvironmentVariable("POSTGRES_HOST");
@@ -40,7 +47,7 @@ namespace GeoWiki.Cli.Services
 
             await using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync();
-            bool dbExists = checkDbExists(conn, database);
+            bool dbExists = databaseService.DbExist(conn, database!);
 
             if (tableName is null)
             {
@@ -49,7 +56,7 @@ namespace GeoWiki.Cli.Services
 
             // Check if the table exists.
             Console.WriteLine($"Checking if table {tableName} exists.");
-            var tableExists = checkTableExists(conn, tableName);
+            var tableExists = databaseService.TableExist(conn, tableName);
             Console.WriteLine($"Table exists: {tableExists}");
 
 
@@ -57,18 +64,18 @@ namespace GeoWiki.Cli.Services
             if (!tableExists)
             {
                 Console.WriteLine($"Creating table {tableName}.");
-                createTable(conn, tableName);
+                databaseService.CreateTableWithGeometry(conn, tableName);
             }
 
             // Add columns if they don't exist.
             foreach (var feature in features.First().Attributes.GetNames())
             {
                 Console.WriteLine($"Checking if column {feature} exists.");
-                var columnExists = checkColumnExists(conn, tableName, feature.ToLowerInvariant());
+                var columnExists = databaseService.CheckColumnExists(conn, tableName, feature.ToLowerInvariant());
                 if (!columnExists)
                 {
                     Console.WriteLine($"Adding column {feature}.");
-                    addColumn(conn, tableName, feature);
+                    databaseService.AddColumn(conn, tableName, feature);
                 }
             }
 
@@ -153,58 +160,6 @@ namespace GeoWiki.Cli.Services
             }
             // Console.WriteLine($"Executing SQL: {cmd.CommandText}");
             cmd.ExecuteNonQuery();
-        }
-
-        private void addColumn(NpgsqlConnection conn, string tableName, string feature)
-        {
-            var cmdText = $"ALTER TABLE {tableName} ADD COLUMN {feature} text";
-            ExecuteNonQuery(conn, cmdText);
-        }
-
-        private bool checkColumnExists(NpgsqlConnection conn, string tableName, string feature)
-        {
-            string cmdText = $"SELECT column_name FROM information_schema.columns WHERE table_name = '{tableName}' AND column_name = '{feature}'";
-            return ExecuteScalar(conn, cmdText);
-        }
-
-        private void createTable(NpgsqlConnection conn, string tableName)
-        {
-            string cmdText = $"CREATE TABLE {tableName} (id serial PRIMARY KEY, geom geometry(Geometry, 4326))";
-            ExecuteNonQuery(conn, cmdText);
-        }
-
-        private static void ExecuteNonQuery(NpgsqlConnection conn, string cmdText)
-        {
-            Console.WriteLine($"Executing: {cmdText}");
-            using (NpgsqlCommand cmd = new NpgsqlCommand(cmdText, conn))
-            {
-                cmd.ExecuteNonQuery();
-            }
-        }
-
-        private bool checkTableExists(NpgsqlConnection conn, string tableName)
-        {
-            var cmdText = $"select case when exists((select * from information_schema.tables where table_name = '" + tableName + "')) then 1 else 0 end";
-            Console.WriteLine($"Executing: {cmdText}");
-            using (NpgsqlCommand cmd = new NpgsqlCommand(cmdText, conn))
-            {
-                return (int)cmd.ExecuteScalar() == 1;
-            }
-        }
-
-        private bool checkDbExists(NpgsqlConnection conn, string database)
-        {
-            string cmdText = $"SELECT 1 FROM pg_database WHERE datname='{database}'";
-            return ExecuteScalar(conn, cmdText);
-        }
-
-        private static bool ExecuteScalar(NpgsqlConnection conn, string cmdText)
-        {
-            Console.WriteLine($"Executing: {cmdText}");
-            using (NpgsqlCommand cmd = new NpgsqlCommand(cmdText, conn))
-            {
-                return cmd.ExecuteScalar() != null;
-            }
         }
     }
 }
