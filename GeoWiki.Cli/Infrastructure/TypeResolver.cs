@@ -1,4 +1,3 @@
-using System;
 using Spectre.Console.Cli;
 
 namespace GeoWiki.Cli.Infrastructure
