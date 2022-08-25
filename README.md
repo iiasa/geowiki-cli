@@ -21,7 +21,7 @@ geowiki planet-image-download -s <config.json> -p <csv path>
 ```
 This option allows you to provide planetAPI configuration like same as before and a csv input which is the search results from above step. All images downloaded are placed in azure blob store which is input in the config.json. The Planet API Image download tool requires a valid API key and quota to download the images.
 
-###Config.json
+### Config.json
 
 ```json
 {
