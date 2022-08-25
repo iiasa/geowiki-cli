@@ -25,7 +25,7 @@ This option allows you to provide planetAPI configuration like same as before an
 
 ```json
 {
-  "apiKey": "api-key your api key",
+  "apiKey": "api-key <your api key>",
   "searchUrl": "https://api.planet.com/data/v1/quick-search",
   "orderUrl": "https://api.planet.com/compute/ops/orders/v2/",
   "startDate": "2022-01-01T00:00:00",
@@ -33,7 +33,7 @@ This option allows you to provide planetAPI configuration like same as before an
   "azureConfig": {
     "account": "rapidai4eo",
     "container": "planet",
-    "sasToken":  "Put your token",
+    "sasToken":  "<Put your token>",
     "pathPrefix": "output"
   }
 }
