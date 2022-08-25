@@ -31,6 +31,7 @@ This option allows you to provide planetAPI configuration like same as before an
     "pathPrefix": "output"
   }
 }
+```
 
 ###csv
 sampleId | long_centroid | lat_centroid | long_min | long_max | lat_min | lat_max | cloudcover
