@@ -19,7 +19,7 @@ This option allows you to provide planetAPI configuration like same as before an
 
 ```json
 {
-  "apiKey": "api-key PLAK1b5ce0edbcde41acbf7bbc544d142528",
+  "apiKey": "api-key your api key",
   "searchUrl": "https://api.planet.com/data/v1/quick-search",
   "orderUrl": "https://api.planet.com/compute/ops/orders/v2/",
   "startDate": "2022-01-01T00:00:00",
@@ -33,5 +33,5 @@ This option allows you to provide planetAPI configuration like same as before an
 }
 
 ```csv
-sampleId,long_centroid,lat_centroid,long_min,long_max,lat_min,lat_max,cloudcover
+sampleId | long_centroid | lat_centroid | long_min | long_max | lat_min | lat_max | cloudcover
 
