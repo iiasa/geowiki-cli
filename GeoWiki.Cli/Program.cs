@@ -1,6 +1,7 @@
 ﻿using GeoWiki.Cli;
 using GeoWiki.Cli.Commands.AddShapeFile;
 using GeoWiki.Cli.Commands.Default;
+using GeoWiki.Cli.Commands.PlanetApi;
 using GeoWiki.Cli.Infrastructure;
 using GeoWiki.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,7 @@ public static class Program
         registrations.AddSingleton<IGreeter, HelloWorldGreeter>();
         registrations.AddScoped<ShapeFileService>();
         registrations.AddScoped<DatabaseService>();
+        registrations.AddScoped<IPlanetApiHelper, PlanetApiHelper>();
         var registrar = new TypeRegistrar(registrations);
 
         var app = new CommandApp(registrar);
@@ -23,6 +25,8 @@ public static class Program
             config.SetApplicationName("geowiki");
             config.AddCommand<DefaultCommand>("hello");
             config.AddCommand<AddShapeFileCommand>("add-shape-file");
+            config.AddCommand<PlanetImageSearch>("planet-image-search");
+            config.AddCommand<PlanetImageDownload>("planet-image-download");
         });
         try
         {

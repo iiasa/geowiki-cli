@@ -3,7 +3,7 @@
   <PropertyGroup>
     <PackageId>GeoWiki.Cli</PackageId>
     <Version>0.0.4</Version>
-    <Authors>Anto Subash</Authors>
+    <Authors>Anto Subash, Santosh Karanam</Authors>
     <Company>IIASA</Company>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
@@ -15,6 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="28.0.1" />
+    <PackageReference Include="IIASA.PlanetApi.Domain" Version="0.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="NetTopologySuite.IO.ShapeFile" Version="2.1.0" />
     <PackageReference Include="Npgsql" Version="6.0.5" />
