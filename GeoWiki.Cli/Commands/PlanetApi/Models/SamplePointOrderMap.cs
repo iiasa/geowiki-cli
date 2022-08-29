@@ -7,13 +7,13 @@ public class SamplePointOrderMap : ClassMap<SamplePointDataOut>
     public SamplePointOrderMap()
     {
         Map(m => m.SampleId).Index(0).Name("id");
-        Map(m => m.Lat).Index(1).Name("Lat");
-
-        Map(m => m.Long).Index(2).Name("Long");
-        Map(m => m.MinLat).Index(3).Name("MinLat");
-        Map(m => m.MaxLat).Index(4).Name("MaxLat");
-        Map(m => m.MinLong).Index(5).Name("MinLong");
-        Map(m => m.MaxLong).Index(6).Name("MaxLong");
+        Map(m => m.Long).Index(1).Name("Long");
+        Map(m => m.Lat).Index(2).Name("Lat");
+        Map(m => m.MinLong).Index(3).Name("MinLong");
+        Map(m => m.MaxLong).Index(4).Name("MaxLong");
+        Map(m => m.MinLat).Index(5).Name("MinLat");
+        Map(m => m.MaxLat).Index(6).Name("MaxLat");
+      
         Map(m => m.CloudCover).Index(7).Name("CloudCover");
         Map(m => m.StartDate).Index(8).Name("StartDate");
         Map(m => m.EndDate).Index(9).Name("EndDate");
