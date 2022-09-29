@@ -30,7 +30,7 @@ module.exports = {
             type: "append",
             path: "GeoWiki.Cli/Program.cs",
             pattern: "// PLOP_COMMAND_REGISTRATION",
-            template: '        config.AddCommand<{{pascalCase name}}Command>("{{name}}");',
+            template: '            config.AddCommand<{{pascalCase name}}Command>("{{name}}");',
         })
 
         actions.push({
