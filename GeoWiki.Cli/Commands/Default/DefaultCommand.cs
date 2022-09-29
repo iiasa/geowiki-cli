@@ -12,7 +12,7 @@ public class DefaultCommand : Command<DefaultCommand.Settings>
         [CommandOption("-n|--name <NAME>")]
         [Description("The person or thing to greet.")]
         [DefaultValue("World")]
-        public string Name { get; set; }
+        public string Name { get; set; } = "World";
     }
 
     public DefaultCommand(IGreeter greeter)

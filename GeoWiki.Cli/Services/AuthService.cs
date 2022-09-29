@@ -30,21 +30,36 @@ public class AuthService
     {
         // create a redirect URI using an available port on the loopback address.
         // requires the OP to allow random ports on 127.0.0.1 - otherwise set a static port
-        var browser = new SystemBrowser();
+        var browser = new SystemBrowser(3000);
         string redirectUri = string.Format($"http://127.0.0.1:{browser.Port}");
 
         var options = new OidcClientOptions
         {
             Authority = Constants.IdentityUrl,
-            ClientId = "interactive.public",
+            ClientId = "GeoWiki_React_NextJs_Public",
             RedirectUri = redirectUri,
-            Scope = "openid profile roles GeoWiki",
+            Scope = "openid profile role GeoWiki",
             FilterClaims = false,
             Browser = browser,
         };
 
         _oidcClient = new OidcClient(options);
         var result = await _oidcClient.LoginAsync(new LoginRequest());
+        if(result.IsError)
+        {
+            Console.WriteLine(result.Error);
+            return;
+        }
+        if(!Directory.Exists(CliPaths.Root))
+        {
+            Directory.CreateDirectory(CliPaths.Root);
+        }
+
+        if(!Directory.Exists(CliPaths.Root))
+        {
+            Directory.CreateDirectory(CliPaths.Root);
+        }
+        Console.WriteLine("Login successful");
         await File.WriteAllTextAsync(CliPaths.AccessToken, result.AccessToken);
         await File.WriteAllTextAsync(CliPaths.RefreshToken, result.RefreshToken);
     }

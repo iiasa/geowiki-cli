@@ -18,7 +18,7 @@ namespace GeoWiki.Cli.Infrastructure
                 return null;
             }
 
-            return _provider.GetService(type);
+            return _provider?.GetService(type);
         }
 
         public void Dispose()

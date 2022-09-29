@@ -3,7 +3,9 @@ using GeoWiki.Cli.Commands.AddShapeFile;
 using GeoWiki.Cli.Commands.Default;
 using GeoWiki.Cli.Commands.Login;
 using GeoWiki.Cli.Commands.PlanetApi;
+using GeoWiki.Cli.Handlers;
 using GeoWiki.Cli.Infrastructure;
+using GeoWiki.Cli.Proxy;
 using GeoWiki.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
@@ -19,6 +21,14 @@ public static class Program
         registrations.AddScoped<AuthService>();
         registrations.AddScoped<DatabaseService>();
         registrations.AddScoped<IPlanetApiHelper, PlanetApiHelper>();
+        registrations.AddScoped<BearerTokenHandler>();
+
+        // PLOP_SERVICE_REGISTRATION
+
+        registrations.AddHttpClient<GeoWikiClient>(client =>
+        {
+            client.BaseAddress = new Uri(Constants.ApiUrl);
+        }).AddHttpMessageHandler<BearerTokenHandler>();
         var registrar = new TypeRegistrar(registrations);
 
         var app = new CommandApp(registrar);
@@ -30,6 +40,8 @@ public static class Program
             config.AddCommand<PlanetImageSearch>("planet-image-search");
             config.AddCommand<PlanetImageDownload>("planet-image-download");
             config.AddCommand<LoginCommand>("login");
+
+            // PLOP_COMMAND_REGISTRATION
         });
         try
         {
