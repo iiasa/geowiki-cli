@@ -6,7 +6,7 @@ namespace GeoWiki.Cli.Commands.{{pascalCase name}};
 
 public class {{pascalCase name}}Command : Command<{{pascalCase name}}Command.Settings>
 {
-    private readonly {{pascalCase name}}Service _{{name}}Service;
+    private readonly {{pascalCase name}}Service _{{camelCase name}}Service;
 
     public sealed class Settings : CommandSettings
     {
@@ -17,12 +17,12 @@ public class {{pascalCase name}}Command : Command<{{pascalCase name}}Command.Set
 
     public {{pascalCase name}}Command({{pascalCase name}}Service {{name}}Service)
     {
-        _{{name}}Service = {{name}}Service ?? throw new ArgumentNullException(nameof({{name}}Service));
+        _{{camelCase name}}Service = {{camelCase name}}Service ?? throw new ArgumentNullException(nameof({{camelCase name}}Service));
     }
 
     public override int Execute(CommandContext context, Settings settings)
     {
-        _{{name}}Service.Greet(settings.Name);
+        _{{camelCase name}}Service.Greet(settings.Name);
         return 0;
     }
 }
