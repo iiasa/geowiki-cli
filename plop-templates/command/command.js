@@ -23,14 +23,21 @@ module.exports = {
             type: "append",
             path: "GeoWiki.Cli/Program.cs",
             pattern: "// PLOP_SERVICE_REGISTRATION",
-            template: "registrations.AddScoped<{{pascalCase name}}Service>();",
+            template: "        registrations.AddScoped<{{pascalCase name}}Service>();",
         });
 
         actions.push({
             type: "append",
             path: "GeoWiki.Cli/Program.cs",
             pattern: "// PLOP_COMMAND_REGISTRATION",
-            template: 'config.AddCommand<{{pascalCase name}}Command>("{{name}}");',
+            template: '        config.AddCommand<{{pascalCase name}}Command>("{{name}}");',
+        })
+
+        actions.push({
+            type: "append",
+            path: "GeoWiki.Cli/Program.cs",
+            pattern: "// PLOP_INJECT_USING",
+            template: 'using GeoWiki.Cli.Commands.{{pascalCase name}};',
         })
         return actions;
     },
