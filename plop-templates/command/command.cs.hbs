@@ -15,7 +15,7 @@ public class {{pascalCase name}}Command : Command<{{pascalCase name}}Command.Set
         public string Name { get; set; } = "World";
     }
 
-    public {{pascalCase name}}Command({{pascalCase name}}Service {{name}}Service)
+    public {{pascalCase name}}Command({{pascalCase name}}Service {{camelCase name}}Service)
     {
         _{{camelCase name}}Service = {{camelCase name}}Service ?? throw new ArgumentNullException(nameof({{camelCase name}}Service));
     }
