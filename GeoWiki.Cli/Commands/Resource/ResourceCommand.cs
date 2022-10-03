@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using GeoWiki.Cli.Services;
+using Spectre.Console;
 using Spectre.Console.Cli;
 namespace GeoWiki.Cli.Commands.Resource;
 
@@ -10,9 +11,14 @@ public class ResourceCommand : Command<ResourceCommand.Settings>
 
     public sealed class Settings : CommandSettings
     {
-        [CommandOption("-n|--name <NAME>")]
-        [Description("The person or thing to greet.")]
-        public string Name { get; set; } = "World";
+        [CommandOption("-p|--path <Path>")]
+        [Description("Import resources.")]
+        public string? Path { get; init; }
+
+        public override ValidationResult Validate()
+        {
+            return string.IsNullOrWhiteSpace(Path) ? ValidationResult.Error("Path is required.") : ValidationResult.Success();
+        }
     }
 
     public ResourceCommand(ResourceService resourceService)
@@ -22,7 +28,7 @@ public class ResourceCommand : Command<ResourceCommand.Settings>
 
     public override int Execute(CommandContext context, Settings settings)
     {
-        _resourceService.Greet(settings.Name);
+        _resourceService.Import(settings.Path);
         return 0;
     }
 }
