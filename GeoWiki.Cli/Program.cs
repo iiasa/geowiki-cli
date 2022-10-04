@@ -3,8 +3,8 @@ using GeoWiki.Cli.Commands.AddShapeFile;
 using GeoWiki.Cli.Commands.Default;
 using GeoWiki.Cli.Commands.Login;
 using GeoWiki.Cli.Commands.PlanetApi;
-using GeoWiki.Cli.Commands.Resource;
 // PLOP_INJECT_USING
+using GeoWiki.Cli.Commands.Import;
 using GeoWiki.Cli.Handlers;
 using GeoWiki.Cli.Infrastructure;
 using GeoWiki.Cli.Proxy;
@@ -26,7 +26,7 @@ public static class Program
         registrations.AddScoped<BearerTokenHandler>();
 
         // PLOP_SERVICE_REGISTRATION
-        registrations.AddScoped<ResourceService>();
+        registrations.AddScoped<ImportService>();
 
         registrations.AddHttpClient<GeoWikiClient>(client =>
         {
@@ -45,7 +45,11 @@ public static class Program
             config.AddCommand<LoginCommand>("login");
 
             // PLOP_COMMAND_REGISTRATION
-            config.AddCommand<ResourceCommand>("resource");
+
+            config.AddBranch("import", resource =>
+            {
+                resource.AddCommand<ResourceImportCommand>("resource");
+            });
         });
         try
         {

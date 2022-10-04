@@ -6,14 +6,28 @@ module.exports = {
             name: "name",
             message: "What is your command name?",
         },
+        {
+            type: "input",
+            name: "folder",
+            message: "What is your command folder?",
+        }
     ],
     actions: function (data) {
         const actions = [];
-        actions.push({
-            type: "add",
-            path: "GeoWiki.Cli/Commands/{{pascalCase name}}/{{pascalCase name}}Command.cs",
-            templateFile: "plop-templates/command/command.cs.hbs",
-        });
+        if (data.folder) {
+            actions.push({
+                type: "add",
+                path: "GeoWiki.Cli/Commands/{{pascalCase folder}}/{{pascalCase name}}/{{pascalCase name}}Command.cs",
+                templateFile: "plop-templates/command/command.cs.hbs",
+            });
+        } else {
+            actions.push({
+                type: "add",
+                path: "GeoWiki.Cli/Commands/{{pascalCase name}}/{{pascalCase name}}Command.cs",
+                templateFile: "plop-templates/command/command.cs.hbs",
+            });
+        }
+
         actions.push({
             type: "add",
             path: "GeoWiki.Cli/Services/{{pascalCase name}}Service.cs",
