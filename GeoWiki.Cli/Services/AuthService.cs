@@ -17,6 +17,18 @@ public class AuthService
         return accessToken;
     }
 
+    public async Task<string> GetTenantAsync()
+    {
+        var tenant = await File.ReadAllTextAsync(CliPaths.Tenant);
+        return tenant;
+    }
+
+    public async Task<string> SwitchTenantAsync(string tenant)
+    {
+        await File.WriteAllTextAsync(CliPaths.Tenant, tenant);
+        return tenant;
+    }
+
     public async Task<bool> IsAuthenticatedAsync()
     {
         if (!File.Exists(CliPaths.AccessToken))

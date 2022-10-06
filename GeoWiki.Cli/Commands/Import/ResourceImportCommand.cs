@@ -6,7 +6,7 @@ using Spectre.Console;
 
 namespace GeoWiki.Cli.Commands.Import;
 
-public class ResourceImportCommand : Command<ResourceImportCommand.Settings>
+public class ResourceImportCommand : AsyncCommand<ResourceImportCommand.Settings>
 {
     private readonly ImportService _importService;
 
@@ -27,9 +27,14 @@ public class ResourceImportCommand : Command<ResourceImportCommand.Settings>
         _importService = importService ?? throw new ArgumentNullException(nameof(importService));
     }
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
     {
-        _importService.ImportResource(settings.Path);
+        if(string.IsNullOrWhiteSpace(settings.Path))
+        {
+            AnsiConsole.MarkupLine($"[red]Path is required.[/]");
+            return 1;
+        }
+        await _importService.ImportResource(settings.Path);
         return 0;
     }
 }

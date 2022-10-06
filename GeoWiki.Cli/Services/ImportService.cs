@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using GeoWiki.Cli.Proxy;
 using Spectre.Console;
@@ -5,7 +6,14 @@ namespace GeoWiki.Cli.Services;
 
 public class ImportService
 {
-    public void ImportResource(string path)
+    private readonly GeoWikiClient _geoWikiClient;
+    private ICollection<KeyValuePairOfStringAndString> _resourceTopics;
+    public ImportService(GeoWikiClient geoWikiClient)
+    {
+        _geoWikiClient = geoWikiClient ?? throw new ArgumentNullException(nameof(geoWikiClient));
+    }
+    
+    public async Task ImportResource(string path)
     {
         AnsiConsole.MarkupLine($"Importing resources from [green]{path}[/]!");
         if (!File.Exists(path))
@@ -19,10 +27,23 @@ public class ImportService
         var resources = workbook.Worksheets.First();
         var rows = resources.RowsUsed();
         var columns = resources.ColumnsUsed();
-        foreach (var row in rows.Skip(2))
+        try
+        {
+            AnsiConsole.MarkupLine($"[green]Getting resource topics[/]");
+            var resourceTopics = await _geoWikiClient.ResourceGetTopicAsync();
+            _resourceTopics = resourceTopics;
+        }
+        catch (Exception e)
+        {
+            AnsiConsole.MarkupLine($"[red]Error while fetching resource topics[/]");
+            AnsiConsole.WriteException(e);
+        }
+        
+        _resourceTopics = await _geoWikiClient.ResourceGetTopicAsync();
+        foreach (var row in rows.Skip(2).Take(2))
         {
             var title = row.Cell(3).GetString();
-            if(!string.IsNullOrWhiteSpace(title))
+            if (!string.IsNullOrWhiteSpace(title))
             {
                 AnsiConsole.MarkupLine($"[green]Importing row {title}[/]");
                 var description = row.Cell(4).GetString();
@@ -40,8 +61,8 @@ public class ImportService
                 AnsiConsole.MarkupLine($"[green] Publisher {publisher} [/]");
                 AnsiConsole.MarkupLine($"[green] Year {year} [/]");
                 AnsiConsole.MarkupLine($"[green] Keywords {keywords} [/]");
-                AnsiConsole.MarkupLine($"[green] ResourceType {resourceType} [/]");
-                AnsiConsole.MarkupLine($"[green] Topic {topic} [/]");
+                AnsiConsole.MarkupLine($"[green] ResourceType {CleanUpString(resourceType)} [/]");
+                AnsiConsole.MarkupLine($"[green] Topic {GetTopic(topic)} [/]");
                 AnsiConsole.MarkupLine($"[green] Audience {audience} [/]");
                 AnsiConsole.MarkupLine($"[green] Language {language} [/]");
                 AnsiConsole.MarkupLine($"[green] Url {url} [/]");
@@ -49,5 +70,28 @@ public class ImportService
         }
         AnsiConsole.MarkupLine($"[green]Found {rows.Count()} rows and {columns.Count()} columns[/]");
         AnsiConsole.MarkupLine($"[green]Done[/]");
+    }
+
+    private static string CleanUpString(string value)
+    {
+        // Remove values with in ()
+        var newValue = Regex.Replace(value, @"\([^)]*\)", string.Empty);
+
+        // Remove values with in []
+        newValue = Regex.Replace(newValue, @"\[[^)]*\]", string.Empty);
+
+        // Remove - and spaces
+        newValue = newValue.Replace("-", string.Empty).Replace(" ", string.Empty);
+
+        return newValue;
+    }
+
+    private string GetTopic(string value)
+    {
+        foreach (var item in _resourceTopics)
+        {
+            AnsiConsole.MarkupLine($"[green] {item.Value} [/]");
+        }
+        return value;
     }
 }

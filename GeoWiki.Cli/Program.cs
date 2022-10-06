@@ -4,6 +4,7 @@ using GeoWiki.Cli.Commands.Default;
 using GeoWiki.Cli.Commands.Login;
 using GeoWiki.Cli.Commands.PlanetApi;
 // PLOP_INJECT_USING
+using GeoWiki.Cli.Commands.SwitchTenant;
 using GeoWiki.Cli.Commands.Import;
 using GeoWiki.Cli.Handlers;
 using GeoWiki.Cli.Infrastructure;
@@ -12,11 +13,13 @@ using GeoWiki.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using System.Net;
 
 public static class Program
 {
     public static int Main(string[] args)
     {
+        ServicePointManager.ServerCertificateValidationCallback += (o, c, ch, er) => true;
         var registrations = new ServiceCollection();
         registrations.AddSingleton<IGreeter, HelloWorldGreeter>();
         registrations.AddScoped<ShapeFileService>();
@@ -26,12 +29,28 @@ public static class Program
         registrations.AddScoped<BearerTokenHandler>();
 
         // PLOP_SERVICE_REGISTRATION
+        registrations.AddScoped<SwitchService>();
         registrations.AddScoped<ImportService>();
 
         registrations.AddHttpClient<GeoWikiClient>(client =>
         {
             client.BaseAddress = new Uri(Constants.ApiUrl);
-        }).AddHttpMessageHandler<BearerTokenHandler>();
+
+        })
+        .AddHttpMessageHandler<BearerTokenHandler>()
+        .AddHttpMessageHandler<TenantHeaderHandler>()
+        .ConfigurePrimaryHttpMessageHandler(() =>
+        {
+            // if debugging, use this to ignore SSL errors
+
+            if (Constants.IgnoreSslErrors)
+            {
+                return new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; }
+                };
+            }
+        });
         var registrar = new TypeRegistrar(registrations);
 
         var app = new CommandApp(registrar);
@@ -46,9 +65,14 @@ public static class Program
 
             // PLOP_COMMAND_REGISTRATION
 
-            config.AddBranch("import", resource =>
+            config.AddBranch("import", import =>
             {
-                resource.AddCommand<ResourceImportCommand>("resource");
+                import.AddCommand<ResourceImportCommand>("resource");
+            });
+
+            config.AddBranch("change", change =>
+            {
+                change.AddCommand<SwitchTenantCommand>("tenant");
             });
         });
         try

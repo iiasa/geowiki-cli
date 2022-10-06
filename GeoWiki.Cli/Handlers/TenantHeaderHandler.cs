@@ -1,23 +1,22 @@
-using System.Net.Http.Headers;
 using GeoWiki.Cli.Services;
 namespace GeoWiki.Cli.Handlers;
-public class BearerTokenHandler : DelegatingHandler
+public class TenantHeaderHandler : DelegatingHandler
 {
     private readonly AuthService _authService;
-    public BearerTokenHandler(AuthService authService)
+    public TenantHeaderHandler(AuthService authService)
     {
         _authService = authService;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        if (!request.Headers.Contains("Authorization"))
+        if (!request.Headers.Contains("__tenant"))
         {
-            string? token = await _authService.GetAccessTokenAsync();
+            string? tenant = await _authService.GetTenantAsync();
 
-            if (!string.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(tenant))
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                request.Headers.Add("__tenant", tenant);
             }
         }
 
