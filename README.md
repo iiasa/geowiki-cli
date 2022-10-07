@@ -8,7 +8,6 @@ Cli for the geowiki
 geowiki add shapefile --path /path/to/file.shp --table table_name
 ```
 
-> [!IMPORTANT]
 > Environment variables required for this command
 > POSTGRES_HOST - Postgres host
 > POSTGRES_PORT - Postgres port
