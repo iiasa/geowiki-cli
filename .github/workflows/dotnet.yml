@@ -15,12 +15,36 @@ jobs:
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
+    - name: Install Versionize
+      run: dotnet tool install --global Versionize
+    - name: Setup git
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+    - name: Versionize Release
+      id: versionize
+      run: versionize --changelog-all --exit-insignificant-commits
+      continue-on-error: true
+    - name: No release required
+      if: steps.versionize.outcome != 'success'
+      run: echo "Skipping publishing. No release required."
     - name: Restore dependencies
+      if: steps.versionize.outcome == 'success'
       run:  dotnet restore GeoWiki.Cli/GeoWiki.Cli.csproj
     - name: Build
+      if: steps.versionize.outcome == 'success'
       run: dotnet build GeoWiki.Cli/GeoWiki.Cli.csproj --no-restore
     - name: pack
-      run: dotnet pack GeoWiki.Cli/GeoWiki.Cli.csproj -c release
+      if: steps.versionize.outcome == 'success'
+      run: dotnet pack GeoWiki.Cli/GeoWiki.Cli.csproj -c release --include-symbols
     - name: push
+      if: steps.versionize.outcome == 'success'
       run: dotnet nuget push GeoWiki.Cli/nupkg/*.nupkg --skip-duplicate -s https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_TOKEN }}
+    - name: Push changes to GitHub
+      if: steps.versionize.outcome == 'success'
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+        tags: true
     
