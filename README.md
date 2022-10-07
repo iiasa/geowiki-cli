@@ -1,28 +1,42 @@
-# geowiki-cli
+# geowiki command line tool
 
 Cli for the geowiki
 
-## Add Shape file to postgis
+## Add Shape file to PostGis
 
-### Environment variables required
+```bash
+geowiki add shapefile --path /path/to/file.shp --table table_name
+```
 
+> [!IMPORTANT]
+> Environment variables required for this command
+> POSTGRES_HOST - Postgres host
+> POSTGRES_PORT - Postgres port
+> POSTGRES_USER - Postgres user
+> POSTGRES_PASSWORD - Postgres password
+> POSTGRES_DATABASE - Postgres database
 
-## Planet API Image Download- https://www.planet.com/
+## Planet API Image Download- <https://www.planet.com/>
+
 Use this tool to search planetAPI images using sample point lat,long and cloud cover threshold. Then using the search results download the required images with clipped AOI.
-### Search-  
-```
-geowiki planet-image-search -s <config.json> -p <csv path> 
-```
-This option allows you to provide planetAPI configuration which is a json file with urls and other parameters which are self explainatory. Also it allows you to provide a csv file with lat. lang which will be used in search query to planet. The csv has cloud cover which will be used to filter the images available at the location. Once the search results are output, user can have a look at csv and filter images by looking at the details and based on requirments. The Planet search API requires a valid API key but doesnot consume quota.
 
-### Download- 
-```
-geowiki planet-image-download -s <config.json> -p <csv path> 
-```
-This option allows you to provide planetAPI configuration like same as before and a csv input which is the search results from above step. All images downloaded are placed in azure blob store which is input in the config.json. The Planet API Image download tool requires a valid API key and quota to download the images.
+### Search Planet API
 
-The downloaded image is automatically clipped to the AOI mentioned in the csv file using clip tool. Also the downloaded image is reporjected to more usable EPSG4326 using reproject tool from planetAPI- https://developers.planet.com/apis/orders/tools-toolchains/
+```bash
+geowiki planet image-search -s <config.json> -p <csv path> 
+```
 
+This option allows you to provide planetAPI configuration which is a json file with urls and other parameters which are self explanatory. Also it allows you to provide a csv file with lat. lang which will be used in search query to planet. The csv has cloud cover which will be used to filter the images available at the location. Once the search results are output, user can have a look at csv and filter images by looking at the details and based on requirements. The Planet search API requires a valid API key but does not consume quota.
+
+### Download Planet API Images
+
+```bash
+geowiki planet image-download -s <config.json> -p <csv path> 
+```
+
+This option allows you to provide planet API configuration like same as before and a csv input which is the search results from above step. All images downloaded are placed in azure blob store which is input in the config.json. The Planet API Image download tool requires a valid API key and quota to download the images.
+
+The downloaded image is automatically clipped to the AOI mentioned in the csv file using clip tool. Also the downloaded image is re-projected to more usable EPSG4326 using re-project tool from planet API- <https://developers.planet.com/apis/orders/tools-toolchains/>
 
 ### Config.json
 
@@ -43,7 +57,7 @@ The downloaded image is automatically clipped to the AOI mentioned in the csv fi
 ```
 
 ### CSV File Format
-```
+
+```csv
 sampleId | long_centroid | lat_centroid | long_min | long_max | lat_min | lat_max | cloudcover
 ```
-

@@ -1,5 +1,4 @@
-﻿using GeoWiki.Cli;
-using GeoWiki.Cli.Commands.AddShapeFile;
+﻿using GeoWiki.Cli.Commands.AddShapeFile;
 using GeoWiki.Cli.Commands.Login;
 using GeoWiki.Cli.Commands.PlanetApi;
 // PLOP_INJECT_USING
@@ -42,9 +41,6 @@ public static class Program
         app.Configure(config =>
         {
             config.SetApplicationName("geowiki");
-            config.AddCommand<AddShapeFileCommand>("add-shape-file");
-            config.AddCommand<PlanetImageSearch>("planet-image-search");
-            config.AddCommand<PlanetImageDownload>("planet-image-download");
             config.AddCommand<LoginCommand>("login");
 
             // PLOP_COMMAND_REGISTRATION
@@ -57,6 +53,17 @@ public static class Program
             config.AddBranch("change", change =>
             {
                 change.AddCommand<SwitchTenantCommand>("tenant");
+            });
+
+            config.AddBranch("add", add =>
+            {
+                add.AddCommand<AddShapeFileCommand>("shapefile");
+            });
+
+            config.AddBranch("planet", planet =>
+            {
+                config.AddCommand<PlanetImageSearch>("image-search");
+                config.AddCommand<PlanetImageDownload>("image-download");
             });
         });
 
