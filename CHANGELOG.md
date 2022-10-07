@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.1.0"></a>
+## [0.1.0](https://www.github.com/iiasa/geowiki-cli/releases/tag/v0.1.0) (2022-10-7)
+
+### Features
+
+* import and login working ([d078e0b](https://www.github.com/iiasa/geowiki-cli/commit/d078e0b931f9e50dd9652c68396f1cf6f919d99b))
+
+### Other
+
+* Merge branch 'dev' of https://github.com/iiasa/geowiki-cli into dev ([0d3d5b9](https://www.github.com/iiasa/geowiki-cli/commit/0d3d5b9295617f7a1b3822b7b7ce4db18d7adb5e))
+* Update README.md ([6c8a02b](https://www.github.com/iiasa/geowiki-cli/commit/6c8a02ba7be788e7dacecb1974564828303c3a00))
+* Update README.md ([c206ddf](https://www.github.com/iiasa/geowiki-cli/commit/c206ddf44c0e7fcbd3d8e8bb562bcfa4776ca0aa))
+* Update README.md ([1837fcf](https://www.github.com/iiasa/geowiki-cli/commit/1837fcfb250c11431686406c0a7dfa54a0669834))
+* Update README.md ([c29bbba](https://www.github.com/iiasa/geowiki-cli/commit/c29bbbacfb94f57b1374c2d7461b4320120bae48))
+* updated read me. ([9e8d033](https://www.github.com/iiasa/geowiki-cli/commit/9e8d033ab592d9f39d9cc0aed56706f0d1b967b5))
+
 <a name="0.0.9"></a>
 ## [0.0.9](https://www.github.com/iiasa/geowiki-cli/releases/tag/v0.0.9) (2022-10-7)
 
