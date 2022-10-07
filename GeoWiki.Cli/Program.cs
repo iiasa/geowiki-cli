@@ -1,6 +1,5 @@
 ﻿using GeoWiki.Cli;
 using GeoWiki.Cli.Commands.AddShapeFile;
-using GeoWiki.Cli.Commands.Default;
 using GeoWiki.Cli.Commands.Login;
 using GeoWiki.Cli.Commands.PlanetApi;
 // PLOP_INJECT_USING
@@ -20,7 +19,6 @@ public static class Program
     {
 
         var registrations = new ServiceCollection();
-        registrations.AddSingleton<IGreeter, HelloWorldGreeter>();
         registrations.AddScoped<ShapeFileService>();
         registrations.AddScoped<AuthService>();
         registrations.AddScoped<DatabaseService>();
@@ -44,7 +42,6 @@ public static class Program
         app.Configure(config =>
         {
             config.SetApplicationName("geowiki");
-            config.AddCommand<DefaultCommand>("hello");
             config.AddCommand<AddShapeFileCommand>("add-shape-file");
             config.AddCommand<PlanetImageSearch>("planet-image-search");
             config.AddCommand<PlanetImageDownload>("planet-image-download");
