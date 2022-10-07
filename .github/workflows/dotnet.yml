@@ -31,19 +31,19 @@ jobs:
       if: steps.versionize.outcome != 'success'
       run: echo "Skipping publishing. No release required."
     - name: Restore dependencies
-      if: steps.versionize.outcome != 'success'
+      if: steps.versionize.outcome == 'success'
       run:  dotnet restore GeoWiki.Cli/GeoWiki.Cli.csproj
     - name: Build
-      if: steps.versionize.outcome != 'success'
+      if: steps.versionize.outcome == 'success'
       run: dotnet build GeoWiki.Cli/GeoWiki.Cli.csproj --no-restore
     - name: pack
-      if: steps.versionize.outcome != 'success'
+      if: steps.versionize.outcome == 'success'
       run: dotnet pack GeoWiki.Cli/GeoWiki.Cli.csproj -c release --include-symbols
     - name: push
-      if: steps.versionize.outcome != 'success'
+      if: steps.versionize.outcome == 'success'
       run: dotnet nuget push GeoWiki.Cli/nupkg/*.nupkg --skip-duplicate -s https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_TOKEN }}
     - name: Push changes to GitHub
-      if: steps.versionize.outcome != 'success'
+      if: steps.versionize.outcome == 'success'
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
