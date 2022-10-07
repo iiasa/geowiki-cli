@@ -13,20 +13,19 @@ using GeoWiki.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using System.Net;
 
 public static class Program
 {
     public static int Main(string[] args)
     {
-        ServicePointManager.ServerCertificateValidationCallback += (o, c, ch, er) => true;
+
         var registrations = new ServiceCollection();
         registrations.AddSingleton<IGreeter, HelloWorldGreeter>();
         registrations.AddScoped<ShapeFileService>();
         registrations.AddScoped<AuthService>();
         registrations.AddScoped<DatabaseService>();
         registrations.AddScoped<IPlanetApiHelper, PlanetApiHelper>();
-        registrations.AddScoped<BearerTokenHandler>();
+        registrations.AddScoped<HeaderHandler>();
 
         // PLOP_SERVICE_REGISTRATION
         registrations.AddScoped<SwitchService>();
@@ -37,8 +36,7 @@ public static class Program
             client.BaseAddress = new Uri(Constants.ApiUrl);
 
         })
-        .AddHttpMessageHandler<BearerTokenHandler>()
-        .AddHttpMessageHandler<TenantHeaderHandler>()
+        .AddHttpMessageHandler<HeaderHandler>()
         .ConfigurePrimaryHttpMessageHandler(() =>
         {
             // if debugging, use this to ignore SSL errors
@@ -51,6 +49,7 @@ public static class Program
                 };
             }
         });
+
         var registrar = new TypeRegistrar(registrations);
 
         var app = new CommandApp(registrar);
@@ -75,6 +74,7 @@ public static class Program
                 change.AddCommand<SwitchTenantCommand>("tenant");
             });
         });
+
         try
         {
             return app.Run(args);

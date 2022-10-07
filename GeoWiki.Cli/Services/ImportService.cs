@@ -10,6 +10,7 @@ public class ImportService
     private ICollection<KeyValuePairOfStringAndString> _resourceTopics;
     public ImportService(GeoWikiClient geoWikiClient)
     {
+        AnsiConsole.MarkupLine($"[green]ImportService[/]");
         _geoWikiClient = geoWikiClient ?? throw new ArgumentNullException(nameof(geoWikiClient));
     }
     

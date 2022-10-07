@@ -1,5 +1,6 @@
 using GeoWiki.Cli.Infrastructure;
 using IdentityModel.OidcClient;
+using Spectre.Console;
 
 namespace GeoWiki.Cli.Services;
 
@@ -19,8 +20,16 @@ public class AuthService
 
     public async Task<string> GetTenantAsync()
     {
-        var tenant = await File.ReadAllTextAsync(CliPaths.Tenant);
-        return tenant;
+        try
+        {
+            var tenant = await File.ReadAllTextAsync(CliPaths.Tenant);
+            return tenant;
+        }
+        catch (Exception e)
+        {
+            AnsiConsole.WriteException(e);
+            return string.Empty;
+        }
     }
 
     public async Task<string> SwitchTenantAsync(string tenant)

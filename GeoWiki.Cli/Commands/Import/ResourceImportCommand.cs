@@ -24,6 +24,7 @@ public class ResourceImportCommand : AsyncCommand<ResourceImportCommand.Settings
 
     public ResourceImportCommand(ImportService importService)
     {
+        AnsiConsole.MarkupLine($"[green]ResourceImportCommand[/]");
         _importService = importService ?? throw new ArgumentNullException(nameof(importService));
     }
 
