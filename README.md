@@ -8,8 +8,7 @@ Cli for the geowiki
 geowiki add shapefile --path /path/to/file.shp --table table_name
 ```
 
-> **Important**: The shapefile must be in the same projection as the database
-> Environment variables required for this command to work: `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DATABASE`
+> **Important**: The shapefile must be in the same projection as the database. These environment variables are required for this command to work: `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DATABASE`
 
 ## Planet API Image Download- <https://www.planet.com/>
 
