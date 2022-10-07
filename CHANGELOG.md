@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.0.8"></a>
+## [0.0.8](https://www.github.com/iiasa/geowiki-cli/releases/tag/v0.0.8) (2022-10-7)
+
+### Bug Fixes
+
+* removed default command ([8c4d084](https://www.github.com/iiasa/geowiki-cli/commit/8c4d084d2f4e97911e1b25a256e4a5f6a4d13596))
+
+### Other
+
+* Merge branch 'dev' of https://github.com/iiasa/geowiki-cli into dev ([9b22192](https://www.github.com/iiasa/geowiki-cli/commit/9b22192b29735ba39df73c3ac4b72fbc7f6c13da))
+
 <a name="0.0.7"></a>
 ## [0.0.7](https://www.github.com/iiasa/geowiki-cli/releases/tag/v0.0.7) (2022-10-7)
 
