@@ -1,6 +1,26 @@
 # geowiki command line tool
 
-Cli for the geowiki
+This is a command line tool for geowiki. It is a work in progress.
+
+[![NuGet Badge](https://buildstats.info/nuget/GeoWiki.Cli)](https://www.nuget.org/packages/GeoWiki.Cli/)
+
+## Installation
+
+```bash
+dotnet tool install --global GeoWiki.Cli
+```
+
+## Update to latest version
+
+```bash
+dotnet tool update --global GeoWiki.Cli
+```
+
+## Usage
+
+```bash
+geowiki --help
+```
 
 ## Add Shape file to PostGis
 
