@@ -36,19 +36,7 @@ public static class Program
             client.BaseAddress = new Uri(Constants.ApiUrl);
 
         })
-        .AddHttpMessageHandler<HeaderHandler>()
-        .ConfigurePrimaryHttpMessageHandler(() =>
-        {
-            // if debugging, use this to ignore SSL errors
-
-            if (Constants.IgnoreSslErrors)
-            {
-                return new HttpClientHandler
-                {
-                    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; }
-                };
-            }
-        });
+        .AddHttpMessageHandler<HeaderHandler>();
 
         var registrar = new TypeRegistrar(registrations);
 
