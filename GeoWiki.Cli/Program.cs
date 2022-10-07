@@ -62,8 +62,8 @@ public static class Program
 
             config.AddBranch("planet", planet =>
             {
-                config.AddCommand<PlanetImageSearch>("image-search");
-                config.AddCommand<PlanetImageDownload>("image-download");
+                planet.AddCommand<PlanetImageSearch>("image-search");
+                planet.AddCommand<PlanetImageDownload>("image-download");
             });
         });
 
