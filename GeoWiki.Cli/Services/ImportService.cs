@@ -49,7 +49,20 @@ public class ImportService
         }
 
         _resourceTopics = await _geoWikiClient.ResourceGetTopicAsync();
-        foreach (var row in rows.Skip(2))
+
+        var appConfig = await _geoWikiClient.AbpApplicationConfigurationGetAsync();
+
+        var allResources = await _geoWikiClient.ResourceGetAllAsync("", 0, 500);
+
+        var allResourceIds = allResources.Items.Select(x => x.Id).ToList();
+
+        foreach(var resId in allResourceIds)
+        {
+            await _geoWikiClient.ResourceDeleteAsync(resId);
+            AnsiConsole.MarkupLine($"[green]Deleted resource with id {resId}[/]");
+        }
+
+        foreach (var row in rows.Skip(3))
         {
             var title = row.Cell(3).GetString();
             if (!string.IsNullOrWhiteSpace(title))

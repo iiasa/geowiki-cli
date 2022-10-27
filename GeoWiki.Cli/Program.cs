@@ -16,6 +16,7 @@ public static class Program
 {
     public static int Main(string[] args)
     {
+        args = new[] { "import", "resource", "-p", @"C:\Users\antos\Downloads\infohub.xlsx" };
 
         var registrations = new ServiceCollection();
         registrations.AddScoped<ShapeFileService>();

@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/GeoWiki.Cli/bin/Debug/net6.0/GeoWiki.Cli.dll",
-            "args": ["add-shape-file", "-p", "D:\\Work\\shp\\iba.shp"],
+            "args": ["import", "-p", "D:\\Work\\shp\\iba.shp"],
             "cwd": "${workspaceFolder}/GeoWiki.Cli",
             "console": "internalConsole",
             "stopAtEntry": false

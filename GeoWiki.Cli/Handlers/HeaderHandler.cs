@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using GeoWiki.Cli.Services;
+using Spectre.Console;
 
 namespace GeoWiki.Cli.Handlers;
 public class HeaderHandler : DelegatingHandler
@@ -19,6 +20,7 @@ public class HeaderHandler : DelegatingHandler
             if (!string.IsNullOrEmpty(token))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                AnsiConsole.MarkupLine($"[green]Authorization header added.[/]");
             }
         }
 
@@ -28,6 +30,7 @@ public class HeaderHandler : DelegatingHandler
             if (!string.IsNullOrEmpty(tenant))
             {
                 request.Headers.Add("__tenant", tenant);
+                AnsiConsole.MarkupLine($"[green]Tenant: {tenant}[/]");
             }
         }
 
