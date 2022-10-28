@@ -31,7 +31,7 @@ module.exports = {
         actions.push({
             type: "add",
             path: "GeoWiki.Cli/Services/{{pascalCase name}}Service.cs",
-            templateFile: "plop-templates/command/service.cs.hbs",
+            templateFile: "plop-templates/services/service.cs.hbs",
         })
         actions.push({
             type: "append",

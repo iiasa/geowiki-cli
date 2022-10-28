@@ -2,6 +2,7 @@
 using GeoWiki.Cli.Commands.Login;
 using GeoWiki.Cli.Commands.PlanetApi;
 // PLOP_INJECT_USING
+using GeoWiki.Cli.Commands.ResourceDeleteAll;
 using GeoWiki.Cli.Commands.SwitchTenant;
 using GeoWiki.Cli.Commands.Import;
 using GeoWiki.Cli.Handlers;
@@ -16,7 +17,7 @@ public static class Program
 {
     public static int Main(string[] args)
     {
-        args = new[] { "import", "resource", "-p", @"C:\Users\antos\Downloads\infohub.xlsx" };
+        args = new[] { "resource", "import",  "-p", @"C:\Users\antos\Downloads\infohub.xlsx" };
 
         var registrations = new ServiceCollection();
         registrations.AddScoped<ShapeFileService>();
@@ -26,8 +27,8 @@ public static class Program
         registrations.AddScoped<HeaderHandler>();
 
         // PLOP_SERVICE_REGISTRATION
+        registrations.AddScoped<ResourceService>();
         registrations.AddScoped<SwitchService>();
-        registrations.AddScoped<ImportService>();
 
         registrations.AddHttpClient<GeoWikiClient>(client =>
         {
@@ -46,14 +47,15 @@ public static class Program
 
             // PLOP_COMMAND_REGISTRATION
 
-            config.AddBranch("import", import =>
+            config.AddBranch("resource", import =>
             {
-                import.AddCommand<ResourceImportCommand>("resource");
+                import.AddCommand<ResourceImportCommand>("import");
+                import.AddCommand<ResourceDeleteAllCommand>("delete-all");
             });
 
-            config.AddBranch("change", change =>
+            config.AddBranch("tenant", change =>
             {
-                change.AddCommand<SwitchTenantCommand>("tenant");
+                change.AddCommand<SwitchTenantCommand>("switch");
             });
 
             config.AddBranch("add", add =>

@@ -1,24 +1,25 @@
+using Spectre.Console;
 using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using GeoWiki.Cli.Proxy;
-using Spectre.Console;
 namespace GeoWiki.Cli.Services;
 
-public class ImportService
+public class ResourceService
 {
     private readonly GeoWikiClient _geoWikiClient;
     private readonly AuthService _authService;
     private ICollection<KeyValuePairOfStringAndString> _resourceTopics;
-    public ImportService(GeoWikiClient geoWikiClient, AuthService authService)
+    public ResourceService(GeoWikiClient geoWikiClient, AuthService authService)
     {
         AnsiConsole.MarkupLine($"[green]ImportService[/]");
         _geoWikiClient = geoWikiClient ?? throw new ArgumentNullException(nameof(geoWikiClient));
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+        _resourceTopics = new List<KeyValuePairOfStringAndString>();
     }
 
     public async Task ImportResource(string path)
     {
-        if(!await _authService.IsAuthenticatedAsync())
+        if (!await _authService.IsAuthenticatedAsync())
         {
             AnsiConsole.MarkupLine($"[red]You are not authenticated. Please login first.[/]");
             AnsiConsole.MarkupLine($"[red]Use the command 'geowiki login' to login.[/]");
@@ -56,7 +57,7 @@ public class ImportService
 
         var allResourceIds = allResources.Items.Select(x => x.Id).ToList();
 
-        foreach(var resId in allResourceIds)
+        foreach (var resId in allResourceIds)
         {
             await _geoWikiClient.ResourceDeleteAsync(resId);
             AnsiConsole.MarkupLine($"[green]Deleted resource with id {resId}[/]");
@@ -111,6 +112,18 @@ public class ImportService
         AnsiConsole.MarkupLine($"[green]Done[/]");
     }
 
+    public async Task DeleteAll()
+    {
+        if (!await _authService.IsAuthenticatedAsync())
+        {
+            AnsiConsole.MarkupLine($"[red]You are not authenticated. Please login first.[/]");
+            AnsiConsole.MarkupLine($"[red]Use the command 'geowiki login' to login.[/]");
+            return;
+        }
+        AnsiConsole.MarkupLine($"[green]Deleting all resources[/]");
+        await _geoWikiClient.ResourceDeleteAllAsync();
+        AnsiConsole.MarkupLine($"[green]Done[/]");
+    }
     private List<string> GetAudience(string audience)
     {
         var audiences = audience.Split(',');

@@ -8,7 +8,7 @@ namespace GeoWiki.Cli.Commands.Import;
 
 public class ResourceImportCommand : AsyncCommand<ResourceImportCommand.Settings>
 {
-    private readonly ImportService _importService;
+    private readonly ResourceService _resourceService;
 
     public sealed class Settings : CommandSettings
     {
@@ -22,10 +22,11 @@ public class ResourceImportCommand : AsyncCommand<ResourceImportCommand.Settings
         }
     }
 
-    public ResourceImportCommand(ImportService importService)
+    public ResourceImportCommand(ResourceService resourceService)
     {
-        _importService = importService ?? throw new ArgumentNullException(nameof(importService));
-    }
+        _resourceService = resourceService ?? throw new ArgumentNullException(nameof(resourceService));
+    }   
+    
 
     public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
     {
@@ -34,7 +35,7 @@ public class ResourceImportCommand : AsyncCommand<ResourceImportCommand.Settings
             AnsiConsole.MarkupLine($"[red]Path is required.[/]");
             return 1;
         }
-        await _importService.ImportResource(settings.Path);
+        await _resourceService.ImportResource(settings.Path);
         return 0;
     }
 }
