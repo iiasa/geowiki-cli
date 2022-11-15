@@ -34,7 +34,7 @@ public class ResourceService
         AnsiConsole.MarkupLine($"[green]Path exists[/]");
         AnsiConsole.MarkupLine($"[green]Importing[/]");
         using var workbook = new XLWorkbook(path);
-        var resources = workbook.Worksheets.First();
+        var resources = workbook.Worksheets.First((sheet) => sheet.Name == "tidy_14112022");
         var rows = resources.RowsUsed();
         var columns = resources.ColumnsUsed();
         try
@@ -90,7 +90,7 @@ public class ResourceService
                     Topic = GetTopic(topic),
                     Audience = GetAudience(audience),
                     Link = url,
-                    Language = string.IsNullOrWhiteSpace(language) ? null : language.Split(',').Select(x => x.Trim()).ToList(),
+                    Language = string.IsNullOrWhiteSpace(language) ? null : language.Split(',').Select(x => GetLanguage(x.Trim())).ToList(),
                 };
                 // AnsiConsole.MarkupLine($"[green] Description {description} [/]");
                 // AnsiConsole.MarkupLine($"[green] Author {author} [/]");
@@ -101,6 +101,7 @@ public class ResourceService
                 // AnsiConsole.MarkupLine($"[green] Audience {audience}[/]");
                 // AnsiConsole.MarkupLine($"[green] Language {language} [/]");
                 // AnsiConsole.MarkupLine($"[green] Url {url} [/]");
+                AnsiConsole.MarkupLine($"[green] Creating resource [/]");
                 var result = await _geoWikiClient.ResourceCreateAsync(resource);
                 if (result == null)
                 {
@@ -146,11 +147,11 @@ public class ResourceService
             case "F":
                 return "Farmers";
             case "FA":
-                return "FarmerClusterFacilitatorAndAdvisor";
+                return "FarmerClusterFacilitatorAndAdvisors";
             case "PM":
-                return "PolicyDecisionMaker";
+                return "PolicyDecisionMakers";
             case "SR":
-                return "ScientistAndResearcher";
+                return "ScientistAndResearchers";
             default:
                 return "GeneralPublic";
         }
@@ -185,21 +186,76 @@ public class ResourceService
 
     private string GetTopicNameByCode(string topicName)
     {
-        var topics = _resourceTopics.Select(x =>
+        switch (topicName)
         {
-            var firstLetters = x.Value.Split(' ').Select(x => x[0]).ToArray();
-            var topic = new string(firstLetters);
-            if (topic == "B")
-            {
-                topic = "BD";
-            }
-            if (topic == topicName)
-            {
-                return x.Key;
-            }
-            return string.Empty;
-        });
+            case "LMP":
+                return "LandManagementPractice";
+            case "AB":
+                return "AgroBiodiversity";
+            case "BD":
+                return "Biodiversity";
+            case "CS":
+                return "CitizenScience";
+            case "BM":
+                return "BiodiversityMonitoring";
+            case "FC":
+                return "FarmerCluster";
+            default:
+                return "Other";
+        }
+    }
 
-        return string.Join("", topics);
+    private string GetResourceType(string resourceType)
+    {
+        switch (resourceType)
+        {
+            case "Collection":
+                return "Collection";
+            case "Dataset":
+                return "Dataset";
+            case "Event":
+                return "Event";
+            case "Image":
+                return "Image";
+            case "Interactive Resource (Website)":
+                return "InteractiveResource";
+            case "Moving Image (Video)":
+                return "MovingImage";
+            case "Physical Object (Hardware)":
+                return "PhysicalObject";
+            case "Service":
+                return "Service";
+            case "Software":
+                return "Software";
+            case "Sound":
+                return "Sound";
+            case "StillImage":
+                return "StillImage";
+            case "Text - Book":
+                return "TextBook";
+            case "Text - Guideline":
+                return "Text - Case Study";
+            case "Text - Case Study":
+                return "TextCaseStudy";
+            case "Text - Report":
+                return "TextReport";
+            case "Text - Policy Brief":
+                return "TextPolicyBrief";
+            case "Text - Scientific Publication":
+                return "TextScientificPublication";
+            default:
+                return "TextOther";
+        }
+    }
+
+    private string GetLanguage(string language)
+    {
+        switch (language)
+        {
+            case "ml":
+                return "mul";
+            default:
+                return language;
+        }
     }
 }

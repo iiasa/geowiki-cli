@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "generate": "plop",
-    "gen-api": "nswag openapi2csclient /input:https://framework.api.v2.geo-wiki.org/swagger/v1/swagger.json /namespace:GeoWiki.Cli.Proxy /output:GeoWiki.Cli\\proxy\\GeoWikiClient.cs /classname:GeoWikiClient /UseBaseUrl:false /JsonLibrary:SystemTextJson"
+    "gen-api": "nswag openapi2csclient /input:https://localhost:44390/swagger/v1/swagger.json /namespace:GeoWiki.Cli.Proxy /output:GeoWiki.Cli\\proxy\\GeoWikiClient.cs /classname:GeoWikiClient /UseBaseUrl:false /JsonLibrary:SystemTextJson"
   },
   "keywords": [],
   "author": "Anto Subash",
