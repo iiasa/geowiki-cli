@@ -59,7 +59,7 @@ public class AuthService
             Authority = Constants.IdentityUrl,
             ClientId = "GeoWiki_React_NextJs_Public",
             RedirectUri = redirectUri,
-            Scope = "openid profile role GeoWiki",
+            Scope = "openid profile roles GeoWiki",
             FilterClaims = false,
             Browser = browser,
         };
@@ -162,5 +162,11 @@ public class AuthService
     {
         if (File.Exists(CliPaths.AccessToken))
             File.Delete(CliPaths.AccessToken);
+
+        if (File.Exists(CliPaths.RefreshToken))
+            File.Delete(CliPaths.RefreshToken);
+
+        if (File.Exists(CliPaths.Tenant))
+            File.Delete(CliPaths.Tenant);
     }
 }

@@ -2,6 +2,7 @@
 using GeoWiki.Cli.Commands.Login;
 using GeoWiki.Cli.Commands.PlanetApi;
 // PLOP_INJECT_USING
+using GeoWiki.Cli.Commands.Logout;
 using GeoWiki.Cli.Commands.ResourceDeleteAll;
 using GeoWiki.Cli.Commands.SwitchTenant;
 using GeoWiki.Cli.Commands.Import;
@@ -46,6 +47,7 @@ public static class Program
             config.AddCommand<LoginCommand>("login");
 
             // PLOP_COMMAND_REGISTRATION
+            config.AddCommand<LogoutCommand>("logout");
 
             config.AddBranch("resource", import =>
             {
