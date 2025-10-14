@@ -120,11 +120,11 @@ public class ImportService
             case "F":
                 return "Farmers";
             case "FA":
-                return "FarmerClusterFacilitatorAndAdvisor";
+                return "FarmerClusterFacilitatorAndAdvisors";
             case "PM":
-                return "PolicyDecisionMaker";
+                return "PolicyDecisionMakers";
             case "SR":
-                return "ScientistAndResearcher";
+                return "ScientistAndResearchers";
             default:
                 return "GeneralPublic";
         }
